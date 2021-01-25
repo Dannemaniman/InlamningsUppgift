@@ -1,4 +1,4 @@
 package com.company;
 
-public class Cockroach {
+public class Cockroach extends Animal{
 }

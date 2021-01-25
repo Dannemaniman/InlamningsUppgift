@@ -1,4 +1,4 @@
 package com.company;
 
-public class Grain {
+public class Grain extends Food{
 }

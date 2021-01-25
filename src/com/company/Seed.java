@@ -1,4 +1,4 @@
 package com.company;
 
-public class Seed {
+public class Seed extends Food{
 }
