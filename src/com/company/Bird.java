@@ -1,7 +1,7 @@
 package com.company;
 
 public class Bird extends Animal{
-    public Bird(String name, int health) {
-        super(name, health);
+    public Bird(String name, int health, String gender) {
+        super(name, health, gender);
     }
 }

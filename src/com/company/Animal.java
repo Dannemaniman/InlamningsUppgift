@@ -1,13 +1,19 @@
 package com.company;
 
-public abstract class Animal {
-    String name;
-    //add gender with a enum
-    int health;
+/*enum Gender{
+    MALE,
+    FEMALE
+}*/
 
-    public Animal(String name, int health){
+public abstract class Animal {
+    private String name;
+    private String gender; //Temporary String, make into enum?
+    private int health;
+
+    public Animal(String name, int health, String gender){
         this.name = name;
         this.health = health;
+        this.gender = gender;
     }
 
 }
