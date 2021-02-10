@@ -2,10 +2,9 @@ package com.company;
 
 public class Player {
     private String name;
-    private int money;
+    private final int money = 500;
 
-    public Player(String name, int money){
+    public Player(String name){
         this.name = name;
-        this.money = money;
     }
 }

@@ -1,11 +1,12 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
-    final int money = 500;
     int rounds;
     int players;
+    ArrayList<Player> player;
 
     public static void main(String[] args) {
 
@@ -19,14 +20,23 @@ public class Game {
         System.out.println(" - How many players? (1-4) - \n");
         players = Integer.parseInt(scanner.nextLine());
 
+        for(int i = 0; i <= players; i++){
+            System.out.println("What is the Players Name?"); //Leta efter ett sätt att skriva "first, second, third" etc..
+            player.add(new Player(scanner.next()));
+        }
+
         System.out.println("    The Game Begins...");
         //purchaseAnimal();
         newRound();
     }
 
     static void newRound(){
-        System.out.println("1. Buy Animal"); //det står köpa max så många djur som hen har pengar till (varje typ av djur har ett fast ursprungspris oavsett kön)
-        System.out.println("2. Buy Food");  //Köpa max så mycket mat som hen har pengar till (mat köps i kg och har kilopris)
+        System.out.println("- What would you like to do? - ");
+        System.out.println("    - 1. Buy Animal"); //det står köpa max så många djur som hen har pengar till (varje typ av djur har ett fast ursprungspris oavsett kön)
+        System.out.println("    - 2. Buy Food");  //Köpa max så mycket mat som hen har pengar till (mat köps i kg och har kilopris)
+        System.out.println("    - 3. Feed Animal"); //Mata sina djur (vilken slags mat måste anges för varje djur man vill mata)
+        System.out.println("    - 4. Mate Animals"); //d) Försöka få ett par djur att para sig, då skapas i 50% av fallen nya djur man äger (om djuren är av samma slag och olika kön, olka slags djur kan inte para sig). Om parningen lyckas kan spelaren döpa det/de nya djuret/djuren (olika slags djur kan ha olika många ungar/parning). Könet på djuren som skapas vid parning slumpas (50% hona, 50% hane).
+        System.out.println("    - 5. Sell Animal"); //Sälja ett-flera djur (priset är ursprungspriset gånger hälsovärdet)
     }
 
     static void purchaseAnimal(){
