@@ -1,7 +1,8 @@
 package com.company;
 
 public class Goat extends Animal{
-    public Goat(String name, int health, String gender) {
-        super(name, health, gender);
+    final int purchasePrice = 90;
+    public Goat(String name, String gender) {
+        super(name, gender);
     }
 }

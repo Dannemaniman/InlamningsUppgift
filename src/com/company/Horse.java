@@ -1,7 +1,8 @@
 package com.company;
 
 public class Horse extends Animal{
-    public Horse(String name, int health, String gender) {
-        super(name, health, gender);
+    final int purchasePrice = 120;
+    public Horse(String name, String gender) {
+        super(name, gender);
     }
 }

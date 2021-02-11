@@ -1,14 +1,12 @@
 package com.company;
 
-import jdk.jshell.execution.Util;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
     int rounds;
     int playersSum;
-    ArrayList<Player> players = new ArrayList<>();
+    ArrayList<Player> players = new ArrayList<>(); //detta borde nog inte vara public... fråga om detta..
     Scanner scanner = new Scanner(System.in);
     Store store = new Store();
     int counter = 0;
@@ -22,7 +20,7 @@ public class Game {
       //  Scanner scanner = new Scanner(System.in);
         System.out.println("--- Welcome to the Game! ---\n");
 
-            while(true){
+        while(true){
                 System.out.println(" - How many rounds? (5 - 30) - \n");
 
                 rounds = Utility.convertAndTestInput(scanner.nextLine());
@@ -69,7 +67,7 @@ public class Game {
 
     void optionScreen(){
         while(rounds != 0){
-            System.out.println("- What would " + players.get(counter).getName() + " like to do? - ");
+            System.out.println("- What would " + players.get(counter).getName() + " like to do? - \t\t" + "Rounds Left: " + rounds);
             System.out.println("    - 1. Buy Animal"); //det står köpa max så många djur som hen har pengar till (varje typ av djur har ett fast ursprungspris oavsett kön)
             System.out.println("    - 2. Buy Food");  //Köpa max så mycket mat som hen har pengar till (mat köps i kg och har kilopris)
             System.out.println("    - 3. Feed Animal"); //Mata sina djur (vilken slags mat måste anges för varje djur man vill mata)
@@ -84,19 +82,28 @@ public class Game {
             }
             switch (choice){
                 case 1 -> {
-                    store.purchaseAnimal(players.get(counter).getMoney());
+                    Player updatedPlayer = store.browseAnimals(players.get(counter));
+                    players.set(counter, updatedPlayer);
+
                 }
-                case 2 -> store.buyFood();
+                case 2 -> {
+                    Player updatedPlayer = store.buyFood(players.get(counter));
+                    players.set(counter, updatedPlayer);
+                }
                 case 3 -> store.feedAnimal();
                 case 4 -> store.mateAnimal();
                 case 5 -> store.sellAnimal();
                 default -> System.out.println("    -  Error - Wrong choice! ");
             }
-
+            showSummary();
+            reduceHealth();
             incrementTurn();
             decrementRounds();
         }
+    }
 
+    private void reduceHealth(){
+        players.get(counter).getAnimals();
     }
 
     private void incrementTurn(){
@@ -115,9 +122,15 @@ public class Game {
         }
     }
 
+    void showSummary(){
+        players.get(counter).getAnimals();
+    }
+
     void gameOver(){
         System.out.println("GameOver!");
     }
+
+
 
 
 }
