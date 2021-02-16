@@ -10,4 +10,12 @@ public class Utility {
             return -1;
         }
     }
+
+    public static String getClassName(Class c){
+        String newWord = c.getName();
+        int position = newWord.lastIndexOf(".");
+        newWord = newWord.substring(position+1);
+
+        return newWord;
+    }
 }

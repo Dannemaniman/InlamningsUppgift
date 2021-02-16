@@ -1,5 +1,6 @@
 package com.company;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Player {
@@ -32,49 +33,95 @@ public class Player {
            this.animals.add(animal);
     }
 
-    public void removeAnimal(String key){  //Bara skicka in som en string text "Bird" så kommer jag deleta med det från min HashMap
-       // if(this.Animals.get(key).get(key).equals(0)){ //om siffran är noll.. ta bort djuret
-       //     this.Animals.remove(key);
-       // }
+    public void removeAnimal(String key){
+        for(Animal animal: animals){
+
+
+        if(animal.getName().equals(key)){ //om siffran är noll.. ta bort djuret
+            this.animals.remove(animal);
+            break;
+        }
+        }
     }
 
-    public void getAnimals(){
+    public ArrayList<Animal> getAnimals(){
+        return this.animals;
+    }
+
+    public void showInventory(){
+        System.out.println(" - FOOD IN POSSESSION - ");
+        for(Food food: foods){
+            String key = food.getType();
+            String anotherKey = Utility.getClassName(food.getClass());
+            System.out.println("\t\t" + key + "\t" + anotherKey + "\t Quantity: "  + food.getQuantity());
+        }
         System.out.println("\n - ANIMALS IN POSSESSION - ");
+        for(Animal animal : animals){
+            String key = animal.getName();
+            String animalWord = animal.getClass().getName();//GLÖM INTE ANVÄNDA UTILITY ISTÄLLET FÖR DENNA KODEN!!
+            int position = animalWord.lastIndexOf(".");
+            animalWord = animalWord.substring(position+1);
+            System.out.println("\t\t" + key + "\t" + animalWord + "\t" + animal.getGender() + "\t HP: "  + animal.getHealth());
+        }
+
+       // System.out.println("\n");
+    }
+
+    public void showAnimals(){
+        System.out.println("\n\n - ANIMALS IN POSSESSION - ");
         for(Animal animal : animals){
             String key = animal.getName();
             String animalWord = animal.getClass().getName();//kanske gör detta till en till enhet i animal klassen..
             int position = animalWord.lastIndexOf(".");
             animalWord = animalWord.substring(position+1);
-            System.out.println("\t " + key + "\t " + animalWord + "\t HP: "  + animal.getHealth() + "\n");
+            System.out.println("\t\t" + key + "\t" + animalWord + "\t" + animal.getGender() + "\t HP: "  + animal.getHealth());
         }
+        System.out.println("\n");
     }
+
 
     public ArrayList<Food> setFood(Food food){
 
         for(Food foo: foods){
-            System.out.println(foo.getClass().getName());
-            System.out.println(food.getClass().getName());
-            System.out.println("hej");
             if(foo.getClass().getName().equals(food.getClass().getName())){
                 foo.setQuantity(food.getQuantity());
-                getFood();
                 return this.foods;
             }
         }
         foods.add(food);
-        getFood();
         return this.foods;
     }
 
-    public void getFood(){
-        System.out.println("\n - FOODS IN POSSESSION - ");
+    public ArrayList<Food> getFood(){
+        return this.foods;
+    }
+
+    public void deleteFood(Food food){
+        int index = 0;
+        for(Food fod: foods){
+            if(fod == food){
+
+                //System.out.println("Food I have " + fod.getType() + " Food to be deleted " + food.getType());
+                fod.setQuantity(-1);
+                if(fod.getQuantity() == 0){
+                    foods.remove(index);
+                    break;
+                }
+            }
+            index++;
+        }
+    }
+
+    public void showFood(){
+        System.out.println("\n\n - FOODS IN POSSESSION - ");
         for(Food food : foods){
             String key = food.getClass().getName();
             String foodWord = food.getClass().getName();//kanske gör detta till en till enhet i animal klassen..
             int position = key.lastIndexOf(".");
             foodWord = foodWord.substring(position+1);
-            System.out.println("\t " + foodWord + "\t Quantity: "  + food.getQuantity() + "\n");
+            System.out.println("\t " + foodWord + "\t Quantity: "  + food.getQuantity());
         }
+        System.out.println("\n");
     }
 
 }
