@@ -1,11 +1,11 @@
 package com.company;
 
-import java.lang.reflect.Array;
 
 public abstract class Animal {
     private String name;
     private String gender;
     private int health = 100;
+    private boolean isSick = false;
 
     public Animal(String name, String gender){
         this.name = name;
@@ -15,10 +15,13 @@ public abstract class Animal {
     public String getGender(){
         return this.gender;
     }
-
+    public String getName(){
+        return this.name;
+    }
     public int getHealth(){
         return this.health;
     }
+
     public void setHealth(int healingAmount) {
         health = health + healingAmount;
         if(health > 100){
@@ -26,9 +29,19 @@ public abstract class Animal {
         }
     }
 
-    public String getName(){
-        return this.name;
+    public boolean isAnimalSick(){
+        double sickness = Math.random();
+        if(sickness <= 0.2){
+            isSick = true;
+        }
+        return isSick;
     }
+
+    public void removeSickness(){
+        this.isSick = false;
+    }
+
+    public boolean getSick(){ return this.isSick; }
 
     public int reduceHealth(){
         int reducer = (int)(Math.random()*((30-10)+1))+10;
@@ -37,14 +50,10 @@ public abstract class Animal {
     }
 
     public boolean feedAnimal(Food food){
-      //  if(food == Grass){
-
         double hpIncrease = health*0.1;
         System.out.println(hpIncrease);
         setHealth((int)hpIncrease);
-       // setHealth(food.getHealingAmount());
         return true;
-       // }
     }
 
 }

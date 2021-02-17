@@ -68,7 +68,10 @@ public class Game {
     void optionScreen(){
 
         while(rounds != 0){
-            if(!logData.name.isEmpty()){ logData.showEventLog(players.get(counter).getName()); }
+            if(!logData.name.isEmpty()){
+                logData.showEventLog(players.get(counter).getName());
+                logData.clearEventLog(players.get(counter).getName());
+            }
             //System.out.println("\n*** New Turn!! ***");
             System.out.println("\n- What would *|* " + players.get(counter).getName() + " *|* like to do? - \t\t" + "Rounds Left: " + rounds + "\t\tPlayer Money: " + players.get(counter).getMoney());
             System.out.println("    - 1. Buy Animal");
@@ -76,7 +79,7 @@ public class Game {
             System.out.println("    - 3. Feed Animal"); //Mata sina djur (vilken slags mat måste anges för varje djur man vill mata)
             System.out.println("    - 4. Mate Animals"); //d) Försöka få ett par djur att para sig, då skapas i 50% av fallen nya djur man äger (om djuren är av samma slag och olika kön, olka slags djur kan inte para sig). Om parningen lyckas kan spelaren döpa det/de nya djuret/djuren (olika slags djur kan ha olika många ungar/parning). Könet på djuren som skapas vid parning slumpas (50% hona, 50% hane).
             System.out.println("    - 5. Sell Animal"); //Sälja ett-flera djur (priset är ursprungspriset gånger hälsovärdet)
-            System.out.println("    - 6. Show Inventory");
+            System.out.println("    - 6. Take Animal To Veterinary");
             System.out.println("    - 7. New Turn");
             int choice = Utility.convertAndTestInput(scanner.nextLine());
             if(choice == -1){
@@ -109,8 +112,7 @@ public class Game {
                 }
                 case 5 -> store.sellAnimal(players.get(counter));
                 case 6 -> {
-                    showInventory();
-                    continue;
+                    takeAnimalToVeterinary();
                 }
                 case 7 -> System.out.println("");
                 default -> System.out.println("    -  Error - Wrong choice! ");
@@ -119,6 +121,63 @@ public class Game {
         }
     }
 
+    public void takeAnimalToVeterinary(){
+        while(true){
+            int counter2 = 1;
+            System.out.println("\n- What Animal do you want to try and heal? - \t\t" + players.get(counter).getMoney());
+            for(Animal animal: players.get(counter).getAnimals()){
+                System.out.println(animal.getSick());
+                System.out.println(counter2 + ". " + animal.getName() + " " +  Utility.getClassName(animal.getClass()) + " HP: " + animal.getHealth() + (animal.getSick() ? " --Sick--" : ""));
+                counter2++;
+        }
+            System.out.println(counter2 + ". Done");
+            int choice = Utility.convertAndTestInput(scanner.nextLine());
+
+            if(choice == players.get(counter).getAnimals().size()+1){
+                System.out.println("You pressed 'Done'");
+                break;
+            }
+
+            if(players.get(counter).getAnimals().get(choice-1).getSick()){
+                int cost = calculateVeterinaryCost(Utility.getClassName(players.get(counter).getAnimals().get(choice-1).getClass()));
+                System.out.println("Would you like to try and heal it? It will cost " + cost);
+                System.out.println("1. Yes");
+                System.out.println("2. No");
+                int listSelection = Utility.convertAndTestInput(scanner.nextLine());
+
+                if(listSelection != 1){
+                    continue;
+                } else{
+                    players.get(counter).setMoney(cost);
+                    if(Math.random() > 0.5){
+                        System.out.println("Success! " + players.get(counter).getAnimals().get(choice-1).getName() + " is no longer sick!");
+                        players.get(counter).getAnimals().get(choice-1).removeSickness();
+
+                    } else {
+                        System.out.println("Sorry didnt work... " + players.get(counter).getAnimals().get(choice-1).getName() + " has died.. Press enter.");
+                        scanner.nextLine();
+                    }
+                }
+            } else {
+                System.out.println(players.get(counter).getAnimals().get(choice-1).getName() + " isn't sick!");
+            }
+        }
+    }
+
+    int calculateVeterinaryCost(String animal){
+        int price = 0;
+
+        switch(animal){
+            case "Bird" -> price = 20;
+            case "Cockroach" -> price = 15;
+            case "Cow" -> price = 30;
+            case "Dog" -> price = 25;
+            case "Goat" -> price = 32;
+            case "Horse" -> price = 45;
+            default -> price = 0;
+        }
+        return price;
+    }
 
     private void newTurn(){
 
@@ -144,21 +203,27 @@ public class Game {
 
     private void reduceHealth(){
         ArrayList<Animal> playerAnimals = players.get(counter).getAnimals();
-        String animalToRemove = "";
+        ArrayList<String> animalsToRemove = new ArrayList<>();
 
         for(Animal animal: playerAnimals){
             int healthLost = animal.reduceHealth();
             logData.addToEventLog(animal.getName(), healthLost, players.get(counter));
+
             if(animal.getHealth() <= 0){
                 logData.addToEventLog(animal.getName(), 1000, players.get(counter)); //Glöm inte detta
-                animalToRemove = animal.getName();
+                animalsToRemove.add(animal.getName());
+            }
 
-             //   players.get(counter).removeAnimal(animalToRemove.getName());
+            //Check if animal is sick
+            if(animal.isAnimalSick()){
+                logData.addToSickAnimals(animal);
             }
         }
-        if(!animalToRemove.equals("")){
-            //System.out.println("GAME CLASS - DETTA DJURET SKA TAS BORT" + animalToRemove);
-            players.get(counter).removeAnimal(animalToRemove);
+        if(!animalsToRemove.isEmpty()){
+            System.out.println("ANIMAL TO REMOVE GAME 167 - " + animalsToRemove);
+            for(String removeAnimal: animalsToRemove){
+                players.get(counter).removeAnimal(removeAnimal);
+            }
         }
     }
 
@@ -186,12 +251,8 @@ public class Game {
     void gameOver(){
         System.out.println("\n \t \t    GameOver! \n");
         System.out.println("\t\t---- Stats ----");
-       // String winner = "";
-
-        //HashMap<String, Integer> participants = new HashMap<>();
-
-       int leadingScore = 0;
-       String winner = "";
+        int leadingScore = 0;
+        String winner = "";
         for (Player player: players){
             int money = store.sellAllAnimals(player.getAnimals());
             player.setMoney(-money);
@@ -203,7 +264,6 @@ public class Game {
         }
         System.out.println("\t----------------------");
         System.out.println("\n \tThe Winner is " + winner + " with " + leadingScore);
-
     }
 
 

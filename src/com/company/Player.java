@@ -36,8 +36,9 @@ public class Player {
     public void removeAnimal(String key){
         for(Animal animal: animals){
 
-
+            System.out.println("PLayer remove animal - " + animal.getName() + key);
         if(animal.getName().equals(key)){ //om siffran är noll.. ta bort djuret
+            System.out.println("Removed - " + animal.getName() + " = " + key);
             this.animals.remove(animal);
             break;
         }

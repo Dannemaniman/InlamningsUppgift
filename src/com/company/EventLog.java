@@ -8,6 +8,7 @@ public class EventLog {
     ArrayList<String> name = new ArrayList<>();
     ArrayList<Integer> healthLost = new ArrayList<>();
     LinkedHashMap<String, LinkedHashMap<String, Integer>> users = new LinkedHashMap<>();
+    ArrayList<String> sickAnimals = new ArrayList<>();
 
     public void addToEventLog(String name, int healthLost, Player player){
         this.name.add(name);
@@ -26,46 +27,40 @@ public class EventLog {
         }
     }
 
-    public void removeFromEventLog(String key){
+    public void addToSickAnimals(Animal animal){
+        sickAnimals.add(animal.getName());
+    }
 
+    public void removeSickAnimal(Animal animal){
+        sickAnimals.remove(animal);
     }
 
     public void showEventLog(String playerName){ //Är det okej att jag skickar Player player överallt såhär?..
-
-
-/*
-        System.out.println(users.get(playerName).keySet());
-        System.out.println(users.get(playerName).values());
-
-
- */
         if(!users.get(playerName).isEmpty()){
             System.out.println("\n---- EVENT LOG ---- ");
             for(String key: users.get(playerName).keySet()){
 
                 if(users.get(playerName).get(key) == 1000){
                     System.out.println("\t" + key + " has died!");
+                    continue;
                 } else if(users.get(playerName).get(key) == 2000){
                     System.out.println("\t" + key + " had no money or animals and has lost the game.");
 
-                } else {
-                    System.out.println("\t" + key + " has lost " + users.get(playerName).get(key) + " HP!");
                 }
+                    System.out.println("\t" + key + " has lost " + users.get(playerName).get(key) + " HP!");
 
-            }
+                if(sickAnimals.contains(key)){ // if(users.get(playerName).get(key) == 3000){
+                        System.out.println("\t" + key + " has become sick! You need to take her to a Veterinary!");
+                    }
+                }
             System.out.println("------------------- ");
         }
         users.get(playerName).clear();
+    }
 
 
-       // for(int i = 0; i < name.size(); i++){
-           // System.out.println("\t  -  " + name.get(i) + " lost: " + healthLost.get(i) + " HP\n");
-     //   }
-     /*   name.clear();
-        healthLost.clear();
-
-
-         */
+    public void clearEventLog(String playerName){
+        users.get(playerName).clear();
     }
 
 }
