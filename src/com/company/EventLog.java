@@ -1,10 +1,10 @@
 package com.company;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class EventLog {
+public class EventLog  implements Serializable {
     ArrayList<String> name = new ArrayList<>();
     ArrayList<Integer> healthLost = new ArrayList<>();
     LinkedHashMap<String, LinkedHashMap<String, Integer>> users = new LinkedHashMap<>();

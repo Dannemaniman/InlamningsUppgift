@@ -1,5 +1,9 @@
 package com.company;
 
+import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,9 +22,68 @@ public class Game {
 
     public void newGame(){
       //  Scanner scanner = new Scanner(System.in);
-        System.out.println("--- Welcome to the Game! ---\n");
+        System.out.println("\n\n--- Welcome to the Game! ---\n");
+
+
 
         while(true){
+                System.out.println("1. New Game");
+                System.out.println("2. Load Game");
+
+                int listSelection = Utility.convertAndTestInput(scanner.nextLine());
+
+                if(listSelection != 1 && listSelection != 2 && listSelection != 3){
+                    System.out.println("Wrong input! Press 1 or 2");
+                    continue;
+                }
+
+
+                if(listSelection == 2){
+                 //   if(!Files.exists(Paths.get("log.ser"))){
+                       // Serializer.serialize("log.ser", logData);
+                     //   System.out.println("Created the log and serialized log to disk!");
+                //    }
+
+
+                    if(Files.exists(Paths.get("saveledger.ser"))){
+                        int counter = 1;
+                        ArrayList<String> savedGames = (ArrayList<String>) Serializer.deserialize("saveledger.ser");
+                        System.out.println("\n  Saved Games: ");
+                        for(String save: savedGames){
+                             System.out.println("\t" + counter + ". " + save);
+                             counter++;
+                         }
+                        System.out.println("\t" + counter + ". Back");
+                        listSelection = Utility.convertAndTestInput(scanner.nextLine());
+
+                        if(listSelection == counter){
+                            continue;
+                        }
+                        if(listSelection < counter && listSelection > 0){
+                            String gameToLoad = savedGames.get(listSelection-1);
+                            SaveStatistics loadGame = (SaveStatistics) Serializer.deserialize(gameToLoad);
+                            rounds = loadGame.getRounds();
+                            playersSum = loadGame.getPlayersSum();
+                            players = loadGame.getPlayers();
+                            this.counter = loadGame.getCounter();
+                            logData = loadGame.getLogData();
+                            System.out.println("...Done Loading, press Enter!");
+                            scanner.nextLine();
+                            players.get(this.counter).showInventory();
+                            logData.showEventLog(players.get(this.counter).getName());
+                            optionScreen();
+                        }
+                     } else {
+                        System.out.println("No saved files.. press Enter");
+                        scanner.nextLine();
+                        continue;
+                    }
+
+                }
+
+
+
+
                 System.out.println(" - How many rounds? (5 - 30) - \n");
 
                 rounds = Utility.convertAndTestInput(scanner.nextLine());
@@ -81,6 +144,7 @@ public class Game {
             System.out.println("    - 5. Sell Animal"); //Sälja ett-flera djur (priset är ursprungspriset gånger hälsovärdet)
             System.out.println("    - 6. Take Animal To Veterinary");
             System.out.println("    - 7. New Turn");
+            System.out.println("    - 8. Save Game");
             int choice = Utility.convertAndTestInput(scanner.nextLine());
             if(choice == -1){
                 System.out.println("    - Error! - Wrong Choice! Must be number between 1 - 7");
@@ -115,6 +179,39 @@ public class Game {
                     takeAnimalToVeterinary();
                 }
                 case 7 -> System.out.println("");
+                case 8 -> {
+                        System.out.println("Please Write Filename:");
+                        String file = scanner.nextLine() + ".ser";
+
+                        if(!Files.exists(Paths.get("saveledger.ser"))){
+                            Serializer.serialize("saveledger.ser", new ArrayList<>());
+                        }
+
+
+                        ArrayList<String> fileName = (ArrayList<String>) Serializer.deserialize("saveledger.ser");
+                        fileName.add(file);
+                        if(Serializer.serialize("saveledger.ser", fileName)){
+                            System.out.println("Success!.. Press Enter to go back.");
+                            scanner.nextLine();
+
+                            SaveStatistics saveStats = new SaveStatistics(rounds, playersSum, players, counter, logData);
+
+                            boolean worked = Serializer.serialize(file, saveStats);
+                            System.out.println(worked);
+                            if(worked){
+                                System.out.println("DOUBLE SUCCESS! SAVESTATS SAVED!!");
+                                continue;
+                            }
+
+
+
+
+                        } else {
+                            System.out.println("Save unsuccessful!.. Press Enter to go back.");
+                            scanner.nextLine();
+                            continue;
+                        }
+                }
                 default -> System.out.println("    -  Error - Wrong choice! ");
             }
             newTurn();

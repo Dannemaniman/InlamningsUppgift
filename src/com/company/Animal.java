@@ -1,7 +1,9 @@
 package com.company;
 
 
-public abstract class Animal {
+import java.io.Serializable;
+
+public abstract class Animal implements Serializable {
     private String name;
     private String gender;
     private int health = 100;
