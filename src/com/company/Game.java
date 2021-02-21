@@ -266,8 +266,8 @@ public class Game {
             decrementRounds();
         }
         reduceHealth();
-        incrementTurn();
         checkIfPlayerLost();
+        incrementTurn();
 
         if(rounds != 0){
             showInventory();
@@ -321,15 +321,19 @@ public class Game {
     }
 
     private void checkIfPlayerLost(){
+        System.out.println("1");
+        System.out.println(counter);
         if(players.get(counter).getAnimals().isEmpty() && players.get(counter).getMoney() < 10){
             logData.addToEventLog(players.get(counter).getName(), 2000, players.get(counter));
-
+            System.out.println("2");
             if(players.size() != 1){
+                System.out.println("Player " + players.get(counter).getName() + " has lost and left the game... Press Enter.");
+                scanner.nextLine();
                 players.remove(counter);
             }
-            if(players.size() == 1){
-                gameOver();
-            }
+        }
+        if(players.size() == 1 && players.get(counter).getMoney() < 10 && players.get(counter).getAnimals().isEmpty()){
+            gameOver();
         }
     }
 
