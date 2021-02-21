@@ -1,12 +1,12 @@
 package com.company;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Store {
-    final int animalPriceList[] = {50, 20, 100, 70, 90, 120}; //FRÅGA OM JAG SKA SLÄNGA IN DETTA I SJÄLVA CLASSERNA ISTÄLLET.. !!
-    final HashMap<String, Integer> animalPriceList2 = new HashMap<String, Integer>() {{
+    private final int[] foodPriceList = {20, 30, 10};
+    private final int[] animalPriceList = {50, 20, 100, 70, 90, 120};
+    private final HashMap<String, Integer> animalPriceList2 = new HashMap<>() {{
         put("Bird", 50);
         put("Cockroach", 20);
         put("Cow", 100);
@@ -15,13 +15,13 @@ public class Store {
         put("Horse", 120);
     }};
 
-    final int foodPriceList[] = {20, 30, 10}; //SAMMA HÄR
+
 
     Player browseAnimals(Player player){
         Scanner scanner = new Scanner(System.in);
-        int listSelection = 0;
-        while(true){  // while(listSelection <= 0 || listSelection > 6){
-            player.showAnimals();
+        int listSelection;
+        while(true){
+            player.displayAnimals();
             System.out.println(" - AVAILABLE ANIMALS -----\t\t " + " Money: " + player.getMoney());
             System.out.println("    - 1. Bird (50)");
             System.out.println("    - 2. Cockroach (20)");
@@ -37,7 +37,7 @@ public class Store {
                 break;
             }
 
-            if(listSelection == -1 || listSelection > 7 || listSelection < 1){
+            if(listSelection > 7 || listSelection < 1){
                 System.out.println("    - Error! - Wrong Choice! Must be number between 1 - 6");
                 continue;
             }
@@ -47,67 +47,51 @@ public class Store {
                 continue;
             }
 
-
-
-
                 System.out.println("- What is the animals name? -");
-                final String animalName = scanner.nextLine();  //gör en ArrayList istället!!
+                final String animalName = scanner.nextLine();
 
                 boolean animalExists = false;
 
                 for(Animal animal: player.getAnimals()){
-               /*     System.out.println(animal.getName());
-                    System.out.println(animalName);*/
                     if(animal.getName().equals(animalName)){
-                        System.out.println("\n\t - You cant name the animals the same name! - \n");
+                        System.out.println("\n\t - You cant name the animals the same name! - ..Press Enter.\n");
+                        scanner.nextLine();
                         animalExists = true;
-
                     }
                 }
-
                 if(animalExists){ continue; }
 
 
-
-
-
-
-
-
             int animalGender = 0;
-        while(animalGender <= 0 || animalGender > 3){ //kanske do while istället
-            System.out.println("- What gender is it? -");
-            System.out.println("    - 1. Male");
-            System.out.println("    - 2. Female");
+             while(animalGender <= 0 || animalGender > 3){
+                System.out.println("- What gender is it? -");
+                  System.out.println("    - 1. Male");
+                  System.out.println("    - 2. Female");
 
-            animalGender = Utility.convertAndTestInput(scanner.nextLine());
-            if(animalGender == -1){
-                System.out.println("    - Error! - Wrong Choice! Must be 1 or 2");
-                continue;
-            }
-        }
-
+                 animalGender = Utility.convertAndTestInput(scanner.nextLine());
+                 if(animalGender == -1){
+                    System.out.println("    - Error! - Wrong Choice! Must be 1 or 2");
+               }
+             }
 
         Animal animalBought =  purchaseAnimals(listSelection, animalName, animalGender);
-        player.addAnimal(animalBought);
-        player.setMoney(animalPriceList[listSelection-1]);
-        //player.showAnimals();
+        if(!animalBought.getName().equals("ERROR")){
+            player.addAnimal(animalBought);
+            player.setMoney(animalPriceList[listSelection-1]);
+        }
         }
         return player;
     }
 
 
-
-
-    private Animal purchaseAnimals(int animals, String name, int gender){ //FIXA DENNA SÅ JAG INTE MÅSTE RETURNA ETT ANIMAL.. KANSKE HELA PLAYERN ISTÄLLET LIKA BRA JAG TAR IN
-        String genderConverted;
+    private Animal purchaseAnimals(int animals, String name, int gender){
+        String genderConverted = "Male";
         switch(gender){
             case 1 -> genderConverted = "Male";
             case 2 -> genderConverted = "Female";
-            default -> genderConverted = "Male";
         }
-        Animal animal;
-        Bird dogglas = new Bird("Gregor", "Male");
+        Animal animal = new Bird("", "");
+
         switch(animals){
             case 1 -> animal = new Bird(name, genderConverted);
             case 2 -> animal = new Cockroach(name, genderConverted);
@@ -115,17 +99,16 @@ public class Store {
             case 4 -> animal = new Dog(name, genderConverted);
             case 5 -> animal = new Goat(name, genderConverted);
             case 6 -> animal = new Horse(name, genderConverted);
-            default -> animal = dogglas; //returna player istället så behöver jag inte alltid returnera ett djur..
         }
         return animal;
     }
 
     Player buyFood(Player player){
         Scanner scanner = new Scanner(System.in);
-        int listSelection = 0;
+        int listSelection;
         int foodAmount;
         while(true){
-            player.showFood();
+            player.displayFood();
             System.out.println("- What food do you want to buy? -\t\t " + player.getMoney());
             System.out.println("    - 1. Grain (20 per kg)");
             System.out.println("    - 2. Grass (30 per kg)");
@@ -134,12 +117,10 @@ public class Store {
 
             listSelection = Utility.convertAndTestInput(scanner.nextLine());
 
-            if(listSelection == -1 || listSelection > 4 || listSelection < 1){
+            if(listSelection > 4 || listSelection < 1 || listSelection == -1){
                 System.out.println("    - Error! - Wrong Choice! Must be number between 1 - 4\n");
                 continue;
-            }
-
-            if(listSelection == 4){
+            }else if(listSelection == 4){
                 break;
             }
 
@@ -152,7 +133,10 @@ public class Store {
                 continue;
             }
 
-
+            if(foodAmount == -1){
+                System.out.println("    - Error! - Wrong Choice! Must be number between 1 - 4\n");
+                continue;
+            }
 
             switch(listSelection){
                 case 1 -> player.setFood(new Grain(foodAmount));
@@ -161,16 +145,15 @@ public class Store {
             }
 
             player.setMoney(price);
-
         }
-
         return player;
     }
 
-    int calculatePrice(int foodAmount, int foodPrice){
 
+    int calculatePrice(int foodAmount, int foodPrice){
         return foodAmount*foodPrice;
     }
+
 
     public Player feedAnimal(Player player){
         Scanner scanner = new Scanner(System.in);
@@ -178,7 +161,6 @@ public class Store {
         while(true) {
             int counter = 1;
             System.out.println("- What Animal do you want to feed? -");
-
 
             for(Animal animal : player.getAnimals()){
                 System.out.println("\t" + counter + ".\t" + animal.getName() + "\t" + Utility.getClassName(animal.getClass()) + "\t HP: " + animal.getHealth());
@@ -188,12 +170,10 @@ public class Store {
 
             int listSelection = Utility.convertAndTestInput(scanner.nextLine());
 
-            if(listSelection == -1 || listSelection > counter || listSelection < 1){
+            if(listSelection > counter || listSelection < 1){
                 System.out.println("    - Error! - Wrong Choice! Must be number between 1 - 3");
                 continue;
-            }
-
-            if(listSelection == counter){
+            } else if(listSelection == counter){
                 break;
             }
 
@@ -201,7 +181,6 @@ public class Store {
 
 
             System.out.println("- What Food do you want to feed " + player.getAnimals().get(listSelection-1).getName() + " with? -");
-
 
             counter = 1;
             for(Food food : player.getFood()){
@@ -211,30 +190,27 @@ public class Store {
 
             if(player.getFood().isEmpty()){
                 System.out.println("\n \t Nothing here.. press enter");
-                listSelection = Utility.convertAndTestInput(scanner.nextLine());
+                scanner.nextLine();
                 continue;
             }
 
             listSelection = Utility.convertAndTestInput(scanner.nextLine());
 
-
-            if(listSelection == -1 || listSelection > counter-1 || listSelection < 1){
+            if(listSelection > counter-1 || listSelection < 1){
                 System.out.println("    - Error! - Wrong Choice! Must be number between 1 - " + counter);
                 continue;
             }
 
             Food foodToDelete = player.getFood().get(listSelection-1);
-
             boolean success = player.getAnimals().get(animalToBeFed).feedAnimal(foodToDelete);
 
             if(success){
-                //Sedan ta bort mitt item
                 player.deleteFood(foodToDelete);
             }
         }
             return player;
-
     }
+
 
     ArrayList<Animal> mateAnimal(ArrayList<Animal> animals){
         Scanner scanner = new Scanner(System.in);
@@ -266,7 +242,6 @@ public class Store {
             if(animals.get(listSelection-1).getName() == firstAnimal.getName()){
                 System.out.println("\nYou cant mate the animal with itself.\n Press Enter..");
                 scanner.nextLine();
-                continue;
             } else{
                 break;
             }
@@ -274,16 +249,10 @@ public class Store {
         }
         Animal secondAnimal = animals.get(listSelection-1);
 
-        //System.out.println(Utility.getClassName(firstAnimal.getClass()) + " --- " + Utility.getClassName(secondAnimal.getClass()));
-        //System.out.println(firstAnimal.getGender() + " ---- " + secondAnimal.getGender());
-        //
-        //
          if(Utility.getClassName(firstAnimal.getClass()).equals(Utility.getClassName(secondAnimal.getClass())) && !firstAnimal.getGender().equals(secondAnimal.getGender())){
              System.out.println("\n" + firstAnimal.getName() + " and " + secondAnimal.getName() + " can be mated! Press Enter..\n");
              scanner.nextLine();
              tryMating(firstAnimal, animals);
-
-
          } else {
              System.out.println(firstAnimal.getName() + " gender " + firstAnimal.getGender());
              System.out.println(secondAnimal.getName() + " gender " + secondAnimal.getGender());
@@ -292,9 +261,11 @@ public class Store {
         return animals;
     }
 
+
+
     public ArrayList<Animal> tryMating(Animal firstAnimal, ArrayList<Animal> animals){ //GÖR OM TILL PLAYER OBJEKT SÅ JAG KAN NÅ PENGAR OCH ALLT OCH SÅ..
         Scanner scanner = new Scanner(System.in);
-        if(Math.random() > 0.5){ //KOLLA SÅ DETTA VERKLIGEN ÄR 50%.... !!!
+        if(Math.random() > 0.5){
             String gender;
             String listSelection;
             if(Math.random() > 0.5){
@@ -338,27 +309,27 @@ public class Store {
 
         if(listSelection == counter){
             return player;
+        } else if(listSelection < 1 && listSelection > counter && listSelection == -1){
+            System.out.println("Please choose one of the available alternatives.. press Enter when ready.");
+            scanner.nextLine();
+            continue;
         }
 
-     //   System.out.println(animals.get(listSelection-1).getHealth() + " /100");
-       // System.out.println(animalPriceList2.get(Utility.getClassName(animals.get(listSelection-1).getClass())));
         double goldToReceive = ((double)animals.get(listSelection-1).getHealth()/100)*(double)animalPriceList2.get(Utility.getClassName(animals.get(listSelection-1).getClass()));
-      //  System.out.println(goldToReceive);
 
         System.out.println("You will receive " + (int)goldToReceive + " kr for it!");
         System.out.println("Are you sure you want to sell it?");
         System.out.println("1. Yes");
         System.out.println("2. No");
-        listSelection = Utility.convertAndTestInput(scanner.nextLine());
-        if(listSelection == 1){
+
+        int confirmation = Utility.convertAndTestInput(scanner.nextLine());
+        if(confirmation == 1){
             player.removeAnimal(animals.get(listSelection-1).getName());
             player.setMoney(-(int)goldToReceive);
+            System.out.println("Sold! Press Enter..\n");
+            scanner.nextLine();
             break;
-        } else {
-            continue;
         }
-
-
         }
         return  player;
     }
@@ -371,9 +342,6 @@ public class Store {
             gold = gold*((double)animal.getHealth()/100);
             goldToReceive = goldToReceive + gold;
         }
-
         return (int)goldToReceive;
     }
-
-
 }

@@ -51,11 +51,5 @@ public abstract class Animal implements Serializable {
         return reducer;
     }
 
-    public boolean feedAnimal(Food food){
-        double hpIncrease = health*0.1;
-        System.out.println(hpIncrease);
-        setHealth((int)hpIncrease);
-        return true;
-    }
-
+    abstract boolean feedAnimal(Food food);
 }

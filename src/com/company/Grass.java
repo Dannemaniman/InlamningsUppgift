@@ -1,5 +1,5 @@
 package com.company;
 
 public class Grass extends Food{
-    public Grass(int quantity){ super("Grass", quantity, 30); }
+    public Grass(int quantity){ super("Grass", quantity, 10); }
 }

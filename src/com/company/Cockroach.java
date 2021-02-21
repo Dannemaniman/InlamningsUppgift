@@ -1,7 +1,6 @@
 package com.company;
 
 public class Cockroach extends Animal{
-    final int purchasePrice = 20;
     public Cockroach(String name, String gender) {
         super(name, gender);
     }
@@ -12,10 +11,9 @@ public class Cockroach extends Animal{
             return false;
         }
         else{
-            double hpIncrease = getHealth()*0.1;
+            double hpIncrease = 10;
             setHealth((int)hpIncrease);
             return true;
         }
     }
-
 }

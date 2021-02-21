@@ -1,69 +1,60 @@
 package com.company;
 
-import java.lang.reflect.Array;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
-    int rounds;
-    int playersSum;
-    ArrayList<Player> players = new ArrayList<>(); //detta borde nog inte vara public... fråga om detta..
-    Scanner scanner = new Scanner(System.in);
-    Store store = new Store();
-    int counter = 0;
-    EventLog logData = new EventLog();
+    private int rounds;
+    private ArrayList<Player> players = new ArrayList<>();
+    private Scanner scanner = new Scanner(System.in);
+    private Store store = new Store();
+    private int counter = 0;
+    boolean activeGame = true;
+    private EventLog logData = new EventLog();
 
     public static void main(String[] args) {
 
     }
 
     public void newGame(){
-      //  Scanner scanner = new Scanner(System.in);
+        int playersSum;
         System.out.println("\n\n--- Welcome to the Game! ---\n");
-
-
 
         while(true){
                 System.out.println("1. New Game");
                 System.out.println("2. Load Game");
-
                 int listSelection = Utility.convertAndTestInput(scanner.nextLine());
 
-                if(listSelection != 1 && listSelection != 2 && listSelection != 3){
+                if(listSelection != 1 && listSelection != 2){
                     System.out.println("Wrong input! Press 1 or 2");
                     continue;
                 }
 
-
                 if(listSelection == 2){
-                 //   if(!Files.exists(Paths.get("log.ser"))){
-                       // Serializer.serialize("log.ser", logData);
-                     //   System.out.println("Created the log and serialized log to disk!");
-                //    }
-
-
                     if(Files.exists(Paths.get("saveledger.ser"))){
                         int counter = 1;
                         ArrayList<String> savedGames = (ArrayList<String>) Serializer.deserialize("saveledger.ser");
+
                         System.out.println("\n  Saved Games: ");
                         for(String save: savedGames){
                              System.out.println("\t" + counter + ". " + save);
                              counter++;
                          }
                         System.out.println("\t" + counter + ". Back");
+
                         listSelection = Utility.convertAndTestInput(scanner.nextLine());
 
-                        if(listSelection == counter){
+                        if(listSelection == counter || listSelection == -1){
+                            System.out.println("\nWrong Input!\n");
                             continue;
                         }
+
                         if(listSelection < counter && listSelection > 0){
                             String gameToLoad = savedGames.get(listSelection-1);
                             SaveStatistics loadGame = (SaveStatistics) Serializer.deserialize(gameToLoad);
                             rounds = loadGame.getRounds();
-                            playersSum = loadGame.getPlayersSum();
                             players = loadGame.getPlayers();
                             this.counter = loadGame.getCounter();
                             logData = loadGame.getLogData();
@@ -78,29 +69,23 @@ public class Game {
                         scanner.nextLine();
                         continue;
                     }
-
                 }
-
-
-
 
                 System.out.println(" - How many rounds? (5 - 30) - \n");
 
                 rounds = Utility.convertAndTestInput(scanner.nextLine());
                 if(rounds == -1){ //Kolla så detta verkligen funkar... !
-                    System.out.println("    - Error! - Must be number between 5 - 30");
+                    System.out.println("    - Error! - Must be number between 5 - 30\n");
                     continue;
                 }
-
 
                 if(rounds < 31 && rounds > 4){
                     System.out.println("\n - How many players? (1-4) - \n");
                     playersSum = Utility.convertAndTestInput(scanner.nextLine());
                     if(playersSum == -1){
-                        System.out.println("    - Error! - Must be number between 5 - 30");
+                        System.out.println("    - Error! - Must be number between 5 - 30\n");
                         continue;
                     }
-
 
                     if(playersSum > 0 && playersSum < 5){
                         break;
@@ -119,38 +104,37 @@ public class Game {
                 case 1 -> System.out.println("\nWhat is the second Players Name?\n");
                 case 2 -> System.out.println("\nWhat is the third Players Name?\n");
                 case 3 -> System.out.println("\nWhat is the fourth Players Name?\n");
-                default -> System.out.println(" - Error!"); //Tänk om här vad default ska vara.. !
-
             }
             players.add(new Player(scanner.nextLine()));
         }
+
         System.out.println("\n    The Game Begins... ... ... ... ... ...\n");
         optionScreen();
     }
 
     void optionScreen(){
 
-        while(rounds != 0){
-            if(!logData.name.isEmpty()){
+        while(rounds != 0 && activeGame){
+            if(!logData.getName().isEmpty()){
                 logData.showEventLog(players.get(counter).getName());
-                logData.clearEventLog(players.get(counter).getName());
+            //FLYTTAR DENNA LÄNGRE NER I REDUCEHEALTH!!    logData.clearEventLog(players.get(counter).getName()); //den kör denna 2 gånger redan i själva classen när jag visar eventlog??????
             }
-            //System.out.println("\n*** New Turn!! ***");
             System.out.println("\n- What would *|* " + players.get(counter).getName() + " *|* like to do? - \t\t" + "Rounds Left: " + rounds + "\t\tPlayer Money: " + players.get(counter).getMoney());
             System.out.println("    - 1. Buy Animal");
-            System.out.println("    - 2. Buy Food");  //Köpa max så mycket mat som hen har pengar till (mat köps i kg och har kilopris)
-            System.out.println("    - 3. Feed Animal"); //Mata sina djur (vilken slags mat måste anges för varje djur man vill mata)
-            System.out.println("    - 4. Mate Animals"); //d) Försöka få ett par djur att para sig, då skapas i 50% av fallen nya djur man äger (om djuren är av samma slag och olika kön, olka slags djur kan inte para sig). Om parningen lyckas kan spelaren döpa det/de nya djuret/djuren (olika slags djur kan ha olika många ungar/parning). Könet på djuren som skapas vid parning slumpas (50% hona, 50% hane).
-            System.out.println("    - 5. Sell Animal"); //Sälja ett-flera djur (priset är ursprungspriset gånger hälsovärdet)
+            System.out.println("    - 2. Buy Food");
+            System.out.println("    - 3. Feed Animal");
+            System.out.println("    - 4. Mate Animals");
+            System.out.println("    - 5. Sell Animal");
             System.out.println("    - 6. Take Animal To Veterinary");
             System.out.println("    - 7. New Turn");
             System.out.println("    - 8. Save Game");
+
             int choice = Utility.convertAndTestInput(scanner.nextLine());
             if(choice == -1){
                 System.out.println("    - Error! - Wrong Choice! Must be number between 1 - 7");
                 continue;
-
             }
+
             switch (choice){
                 case 1 -> {
                     Player updatedPlayer = store.browseAnimals(players.get(counter));
@@ -187,14 +171,13 @@ public class Game {
                             Serializer.serialize("saveledger.ser", new ArrayList<>());
                         }
 
-
                         ArrayList<String> fileName = (ArrayList<String>) Serializer.deserialize("saveledger.ser");
                         fileName.add(file);
                         if(Serializer.serialize("saveledger.ser", fileName)){
                             System.out.println("Success!.. Press Enter to go back.");
                             scanner.nextLine();
 
-                            SaveStatistics saveStats = new SaveStatistics(rounds, playersSum, players, counter, logData);
+                            SaveStatistics saveStats = new SaveStatistics(rounds, players, counter, logData);
 
                             boolean worked = Serializer.serialize(file, saveStats);
                             System.out.println(worked);
@@ -202,10 +185,6 @@ public class Game {
                                 System.out.println("DOUBLE SUCCESS! SAVESTATS SAVED!!");
                                 continue;
                             }
-
-
-
-
                         } else {
                             System.out.println("Save unsuccessful!.. Press Enter to go back.");
                             scanner.nextLine();
@@ -214,7 +193,9 @@ public class Game {
                 }
                 default -> System.out.println("    -  Error - Wrong choice! ");
             }
-            newTurn();
+            if(activeGame){
+                newTurn();
+            }
         }
     }
 
@@ -249,9 +230,12 @@ public class Game {
                     if(Math.random() > 0.5){
                         System.out.println("Success! " + players.get(counter).getAnimals().get(choice-1).getName() + " is no longer sick!");
                         players.get(counter).getAnimals().get(choice-1).removeSickness();
+                        logData.removeSickAnimal(players.get(counter).getAnimals().get(choice-1));
+                        logData.clearEventLog(players.get(counter).getName());
 
                     } else {
                         System.out.println("Sorry didnt work... " + players.get(counter).getAnimals().get(choice-1).getName() + " has died.. Press enter.");
+                        players.get(counter).removeAnimal(players.get(counter).getAnimals().get(choice-1).getName());
                         scanner.nextLine();
                     }
                 }
@@ -280,9 +264,8 @@ public class Game {
 
         if(players.get(counter) == players.get(players.size()-1)){
             decrementRounds();
-
         }
-        reduceHealth(); //detta ska göras för alla då... VÄLDIGT VIKTIG GLÖM INTE DENNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        reduceHealth();
         incrementTurn();
         checkIfPlayerLost();
 
@@ -291,33 +274,25 @@ public class Game {
         }
     }
 
-    private void checkIfPlayerLost(){
-        if(players.get(counter).getAnimals().isEmpty() && players.get(counter).getMoney() == 0){
-            players.remove(counter);
-            logData.addToEventLog(players.get(counter).getName(), 2000, players.get(counter));
-        }
-    }
-
     private void reduceHealth(){
         ArrayList<Animal> playerAnimals = players.get(counter).getAnimals();
         ArrayList<String> animalsToRemove = new ArrayList<>();
+        logData.clearEventLog(players.get(counter).getName());
 
         for(Animal animal: playerAnimals){
             int healthLost = animal.reduceHealth();
             logData.addToEventLog(animal.getName(), healthLost, players.get(counter));
 
             if(animal.getHealth() <= 0){
-                logData.addToEventLog(animal.getName(), 1000, players.get(counter)); //Glöm inte detta
+                logData.addToEventLog(animal.getName(), 1000, players.get(counter));
                 animalsToRemove.add(animal.getName());
             }
 
-            //Check if animal is sick
             if(animal.isAnimalSick()){
                 logData.addToSickAnimals(animal);
             }
         }
         if(!animalsToRemove.isEmpty()){
-            System.out.println("ANIMAL TO REMOVE GAME 167 - " + animalsToRemove);
             for(String removeAnimal: animalsToRemove){
                 players.get(counter).removeAnimal(removeAnimal);
             }
@@ -345,7 +320,21 @@ public class Game {
         players.get(counter).showInventory();
     }
 
+    private void checkIfPlayerLost(){
+        if(players.get(counter).getAnimals().isEmpty() && players.get(counter).getMoney() < 10){
+            logData.addToEventLog(players.get(counter).getName(), 2000, players.get(counter));
+
+            if(players.size() != 1){
+                players.remove(counter);
+            }
+            if(players.size() == 1){
+                gameOver();
+            }
+        }
+    }
+
     void gameOver(){
+        activeGame = false;
         System.out.println("\n \t \t    GameOver! \n");
         System.out.println("\t\t---- Stats ----");
         int leadingScore = 0;
@@ -360,10 +349,7 @@ public class Game {
             }
         }
         System.out.println("\t----------------------");
-        System.out.println("\n \tThe Winner is " + winner + " with " + leadingScore);
+        System.out.println("\n \tThe Winner is " + winner + " with " + leadingScore + " \n");
+        System.exit(0);
     }
-
-
-
-
 }

@@ -1,7 +1,6 @@
 package com.company;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Player  implements Serializable {
@@ -23,7 +22,7 @@ public class Player  implements Serializable {
     }
 
     public boolean isPurchasePossible(int amount){
-        return money > amount;
+        return money >= amount;
     }
 
     public int getMoney(){
@@ -37,9 +36,7 @@ public class Player  implements Serializable {
     public void removeAnimal(String key){
         for(Animal animal: animals){
 
-            System.out.println("PLayer remove animal - " + animal.getName() + key);
-        if(animal.getName().equals(key)){ //om siffran är noll.. ta bort djuret
-            System.out.println("Removed - " + animal.getName() + " = " + key);
+        if(animal.getName().equals(key)){
             this.animals.remove(animal);
             break;
         }
@@ -60,20 +57,18 @@ public class Player  implements Serializable {
         System.out.println("\n - ANIMALS IN POSSESSION - ");
         for(Animal animal : animals){
             String key = animal.getName();
-            String animalWord = animal.getClass().getName();//GLÖM INTE ANVÄNDA UTILITY ISTÄLLET FÖR DENNA KODEN!!
+            String animalWord = animal.getClass().getName();
             int position = animalWord.lastIndexOf(".");
             animalWord = animalWord.substring(position+1);
             System.out.println("\t\t" + key + "\t" + animalWord + "\t" + animal.getGender() + "\t HP: "  + animal.getHealth());
         }
-
-       // System.out.println("\n");
     }
 
-    public void showAnimals(){
+    public void displayAnimals(){
         System.out.println("\n\n - ANIMALS IN POSSESSION - ");
         for(Animal animal : animals){
             String key = animal.getName();
-            String animalWord = animal.getClass().getName();//kanske gör detta till en till enhet i animal klassen..
+            String animalWord = animal.getClass().getName();
             int position = animalWord.lastIndexOf(".");
             animalWord = animalWord.substring(position+1);
             System.out.println("\t\t" + key + "\t" + animalWord + "\t" + animal.getGender() + "\t HP: "  + animal.getHealth());
@@ -83,7 +78,6 @@ public class Player  implements Serializable {
 
 
     public ArrayList<Food> setFood(Food food){
-
         for(Food foo: foods){
             if(foo.getClass().getName().equals(food.getClass().getName())){
                 foo.setQuantity(food.getQuantity());
@@ -102,8 +96,6 @@ public class Player  implements Serializable {
         int index = 0;
         for(Food fod: foods){
             if(fod == food){
-
-                //System.out.println("Food I have " + fod.getType() + " Food to be deleted " + food.getType());
                 fod.setQuantity(-1);
                 if(fod.getQuantity() == 0){
                     foods.remove(index);
@@ -114,16 +106,15 @@ public class Player  implements Serializable {
         }
     }
 
-    public void showFood(){
+    public void displayFood(){
         System.out.println("\n\n - FOODS IN POSSESSION - ");
         for(Food food : foods){
             String key = food.getClass().getName();
-            String foodWord = food.getClass().getName();//kanske gör detta till en till enhet i animal klassen..
+            String foodWord = food.getClass().getName();
             int position = key.lastIndexOf(".");
             foodWord = foodWord.substring(position+1);
             System.out.println("\t " + foodWord + "\t Quantity: "  + food.getQuantity());
         }
         System.out.println("\n");
     }
-
 }
