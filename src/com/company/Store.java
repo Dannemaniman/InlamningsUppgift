@@ -213,15 +213,32 @@ public class Store {
 
 
     ArrayList<Animal> mateAnimal(ArrayList<Animal> animals){
+
+
         Scanner scanner = new Scanner(System.in);
+        int listSelection;
+        int counter;
+
+        while(true){
+
         System.out.println("- What Animal do you want to mate? -");
-        int counter = 1;
+        counter = 1;
         for(Animal animal: animals){
             System.out.println("\t" + counter + ".\t" + animal.getName() + "\t" + Utility.getClassName(animal.getClass()) + "\t Kön: " + animal.getGender());
             counter++;
         }
 
-        int listSelection = Utility.convertAndTestInput(scanner.nextLine());
+        listSelection = Utility.convertAndTestInput(scanner.nextLine());
+
+        if(listSelection == -1){
+            System.out.println("Wrong Input! Please try again. Press Enter");
+            scanner.nextLine();
+            continue;
+        } else {
+            break;
+        }
+        }
+
         Animal firstAnimal = animals.get(listSelection-1);
 
         while(true){
@@ -237,27 +254,35 @@ public class Store {
                 counter++;
             }
 
-            listSelection = Utility.convertAndTestInput(scanner.nextLine());
+            int listSelection2 = Utility.convertAndTestInput(scanner.nextLine());
 
-            if(animals.get(listSelection-1).getName() == firstAnimal.getName()){
-                System.out.println("\nYou cant mate the animal with itself.\n Press Enter..");
+            if(listSelection2 == -1){
+                System.out.println("Wrong Input! Please try again. Press Enter");
                 scanner.nextLine();
-            } else{
-                break;
+                continue;
             }
 
-        }
-        Animal secondAnimal = animals.get(listSelection-1);
+            if(animals.get(listSelection2-1).getName() == firstAnimal.getName()){
+                System.out.println("\nYou cant mate the animal with itself.\n Press Enter..");
+                scanner.nextLine();
+                continue;
+            }
+
+        Animal secondAnimal = animals.get(listSelection2-1);
 
          if(Utility.getClassName(firstAnimal.getClass()).equals(Utility.getClassName(secondAnimal.getClass())) && !firstAnimal.getGender().equals(secondAnimal.getGender())){
              System.out.println("\n" + firstAnimal.getName() + " and " + secondAnimal.getName() + " can be mated! Press Enter..\n");
              scanner.nextLine();
              tryMating(firstAnimal, animals);
+             break;
          } else {
              System.out.println(firstAnimal.getName() + " gender " + firstAnimal.getGender());
              System.out.println(secondAnimal.getName() + " gender " + secondAnimal.getGender());
-             System.out.println("These 2 animals cant be mated! It has to be the same type and different genders!");
+             System.out.println("These 2 animals cant be mated! It has to be the same type and different genders! Press Enter.");
+             scanner.nextLine();
+             continue;
     }
+        }
         return animals;
     }
 
@@ -307,13 +332,14 @@ public class Store {
         System.out.println("\t" + counter + ".  Done");
         int listSelection = Utility.convertAndTestInput(scanner.nextLine());
 
-        if(listSelection == counter){
-            return player;
-        } else if(listSelection < 1 && listSelection > counter && listSelection == -1){
+            if(listSelection < 1 || listSelection > counter || listSelection == -1){
             System.out.println("Please choose one of the available alternatives.. press Enter when ready.");
             scanner.nextLine();
             continue;
-        }
+            }
+            if(listSelection == counter){
+                return player;
+            }
 
         double goldToReceive = ((double)animals.get(listSelection-1).getHealth()/100)*(double)animalPriceList2.get(Utility.getClassName(animals.get(listSelection-1).getClass()));
 
@@ -329,6 +355,14 @@ public class Store {
             System.out.println("Sold! Press Enter..\n");
             scanner.nextLine();
             break;
+        }
+
+        if(confirmation == 2){
+            break;
+        }
+        else {
+            System.out.println("Please enter one of the available inputs.. Press Enter.");
+            scanner.nextLine();
         }
         }
         return  player;

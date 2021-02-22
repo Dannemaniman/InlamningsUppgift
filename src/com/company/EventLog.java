@@ -1,6 +1,7 @@
 package com.company;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -8,7 +9,7 @@ public class EventLog  implements Serializable {
    private ArrayList<String> name = new ArrayList<>();
    private ArrayList<Integer> healthLost = new ArrayList<>();
    private LinkedHashMap<String, LinkedHashMap<String, Integer>> users = new LinkedHashMap<>();
-   private ArrayList<String> sickAnimals = new ArrayList<>();
+   private LinkedHashMap<String, ArrayList<String>> sickAnimals = new LinkedHashMap<>();
 
 
    public ArrayList<String> getName(){
@@ -31,15 +32,21 @@ public class EventLog  implements Serializable {
         }
     }
 
-    public void addToSickAnimals(Animal animal){
-        sickAnimals.add(animal.getName());
-    }
+    public void addToSickAnimals(Player player, Animal animal){
+        ArrayList<String> animals = sickAnimals.get(player.getName());
 
-    public void removeSickAnimal(Animal animal){
-        sickAnimals.remove(animal);
+        if (animals == null) {
+            animals = new ArrayList<>();
+        }
+
+        if(!animals.contains(animal.getName())){
+            animals.add(animal.getName());
+        }
+        sickAnimals.put(player.getName(), animals);
     }
 
     public void showEventLog(String playerName){
+
         if(users.get(playerName) != null){
             System.out.println("\n---- EVENT LOG ---- ");
             for(String key: users.get(playerName).keySet()){
@@ -53,10 +60,14 @@ public class EventLog  implements Serializable {
                 }
                 System.out.println("\t" + key + " has lost " + users.get(playerName).get(key) + " HP!");
 
-                if(sickAnimals.contains(key)){
-                        System.out.println("\t" + key + " has become sick! You need to take her to a Veterinary!");
-                    }
                 }
+
+            System.out.println("------------------- ");
+            if(sickAnimals.get(playerName) != null){
+                for(String animal: sickAnimals.get(playerName)){
+                   System.out.println("\t" + animal + " has become sick! You need to take her to a Veterinary!");
+                 }
+            }
             System.out.println("------------------- ");
         }
         if(users.get(playerName) != null){
@@ -70,4 +81,14 @@ public class EventLog  implements Serializable {
         }
     }
 
+    public void clearSickAnimals(Animal animal, Player player){
+        if(sickAnimals != null){
+            for(String anima: sickAnimals.get(player.getName())){
+                if(anima == animal.getName()){
+                    sickAnimals.get(player.getName()).remove(anima);
+                    break;
+                }
+            }
+    }
+    }
 }
